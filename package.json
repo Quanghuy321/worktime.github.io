@@ -1,0 +1,12 @@
+{
+  "name": "worktime-avatar-migration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate:avatars": "node scripts/migrate-avatars.mjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.0",
+    "sharp": "^0.35.5"
+  }
+}
