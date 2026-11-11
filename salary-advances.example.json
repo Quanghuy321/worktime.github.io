@@ -1,0 +1,16 @@
+{
+  "salaryAdvances": {
+    "REPLACE_WITH_EMPLOYEE_AUTH_UID": {
+      "-OExampleRequestId123": {
+        "uid": "REPLACE_WITH_EMPLOYEE_AUTH_UID",
+        "name": "Nguyen Van A",
+        "email": "employee@example.com",
+        "month": "2026-11",
+        "amount": 300000,
+        "reason": "Ung luong thang 11",
+        "status": "pending",
+        "createdAt": 1794355200000
+      }
+    }
+  }
+}

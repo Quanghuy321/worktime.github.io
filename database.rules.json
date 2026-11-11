@@ -1,0 +1,77 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+        ".write": "auth != null && ((auth.uid === $uid && (root.child('users').child(auth.uid).child('status').val() === 'active' || (!data.exists() && newData.exists() && newData.child('role').val() === 'employee' && newData.child('status').val() === 'active'))) || (root.child('users').child(auth.uid).child('status').val() === 'active' && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')))",
+        ".validate": "newData.hasChildren(['uid','email','role','status']) && newData.child('uid').val() === $uid && newData.child('role').val().matches(/^(employee|admin|superadmin)$/) && newData.child('status').val().matches(/^(active|locked|inactive|deleted)$/) && ((!data.exists() && ((newData.child('role').val() === 'employee' && newData.child('status').val() === 'active' && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')) || root.child('users').child(auth.uid).child('role').val() === 'superadmin')) || (data.exists() && ((root.child('users').child(auth.uid).child('role').val() === 'superadmin' && auth.uid !== $uid) || (auth.uid === $uid && newData.child('role').val() === data.child('role').val() && newData.child('status').val() === data.child('status').val()) || (root.child('users').child(auth.uid).child('role').val() === 'admin' && auth.uid !== $uid && data.child('role').val() === 'employee' && newData.child('role').val().matches(/^(employee|admin)$/)))))"
+      }
+    },
+    "attendance": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+        "$date": {
+          ".write": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+          ".validate": "newData.hasChildren(['uid','date']) && newData.child('uid').val() === $uid && newData.child('date').val() === $date"
+        }
+      }
+    },
+    "attendanceSettings": {
+      "geofences": {
+        ".read": "auth != null",
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+        "$geofenceId": {
+          ".validate": "newData.hasChildren(['enabled','name','latitude','longitude','radiusMeters','updatedAt','updatedBy']) && newData.child('enabled').val() === true && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('latitude').isNumber() && newData.child('latitude').val() >= -90 && newData.child('latitude').val() <= 90 && newData.child('longitude').isNumber() && newData.child('longitude').val() >= -180 && newData.child('longitude').val() <= 180 && newData.child('radiusMeters').isNumber() && newData.child('radiusMeters').val() >= 50 && newData.child('radiusMeters').val() <= 2000 && newData.child('updatedAt').isNumber() && newData.child('updatedBy').val() === auth.uid"
+        }
+      },
+      "geofence": {
+        ".read": "auth != null",
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+        ".validate": "newData.hasChildren(['enabled','name','latitude','longitude','radiusMeters','updatedAt','updatedBy']) && newData.child('enabled').val() === true && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('latitude').isNumber() && newData.child('latitude').val() >= -90 && newData.child('latitude').val() <= 90 && newData.child('longitude').isNumber() && newData.child('longitude').val() >= -180 && newData.child('longitude').val() <= 180 && newData.child('radiusMeters').isNumber() && newData.child('radiusMeters').val() >= 50 && newData.child('radiusMeters').val() <= 2000 && newData.child('updatedAt').isNumber() && newData.child('updatedBy').val() === auth.uid"
+      }
+    },
+    "leaves": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+        "$leaveId": {
+          ".write": "auth != null && ((auth.uid === $uid && root.child('users').child(auth.uid).child('status').val() === 'active' && ((!data.exists() && newData.exists() && newData.child('status').val() === 'pending' && newData.child('reviewedBy').val() === '' && newData.child('reviewedByName').val() === '' && !newData.child('reviewedAt').exists()) || (!newData.exists() && data.child('status').val() === 'pending'))) || ((root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin') && root.child('users').child(auth.uid).child('status').val() === 'active' && (!newData.exists() || (data.child('status').val() === 'pending' && newData.child('status').val().matches(/^(approved|rejected)$/) && newData.child('reviewedBy').val() === auth.uid && newData.child('reviewedAt').isNumber()))))",
+          ".validate": "newData.hasChildren(['uid','name','email','startDate','endDate','type','reason','status','createdAt','reviewedBy','reviewedByName']) && newData.child('uid').val() === $uid && newData.child('name').isString() && newData.child('name').val().length <= 120 && newData.child('email').isString() && newData.child('email').val().length <= 254 && newData.child('startDate').isString() && newData.child('startDate').val().matches(/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/) && newData.child('endDate').isString() && newData.child('endDate').val().matches(/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/) && newData.child('endDate').val() >= newData.child('startDate').val() && newData.child('type').isString() && newData.child('type').val().matches(/^(annual|sick|personal|unpaid|other)$/) && newData.child('reason').isString() && newData.child('reason').val().length > 0 && newData.child('reason').val().length <= 2000 && newData.child('status').isString() && newData.child('status').val().matches(/^(pending|approved|rejected)$/) && newData.child('createdAt').isNumber() && newData.child('reviewedBy').isString() && newData.child('reviewedByName').isString() && newData.child('reviewedByName').val().length <= 120 && (!newData.child('reviewedAt').exists() || newData.child('reviewedAt').isNumber())"
+        }
+      }
+    },
+    "payroll": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+        "$month": {
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+          ".validate": "newData.hasChildren(['uid','month']) && newData.child('uid').val() === $uid && newData.child('month').val() === $month"
+        }
+      }
+    },
+    "payrollHolidays": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+      "$month": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+        "$date": {
+          ".validate": "newData.isBoolean()"
+        }
+      }
+    },
+    "salaryAdvances": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+        "$requestId": {
+          ".write": "auth != null && ((auth.uid === $uid && !data.exists() && newData.child('status').val() === 'pending') || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'superadmin')",
+          ".validate": "newData.hasChildren(['uid','month','amount','reason','status']) && newData.child('uid').val() === $uid && newData.child('month').isString() && newData.child('month').val().matches(/^[0-9]{4}-(0[1-9]|1[0-2])$/) && newData.child('amount').isNumber() && newData.child('amount').val() > 0 && newData.child('reason').isString() && newData.child('reason').val().length > 0 && newData.child('reason').val().length <= 300 && newData.child('status').isString() && newData.child('status').val().matches(/^(pending|approved|rejected)$/) && (!newData.child('name').exists() || (newData.child('name').isString() && newData.child('name').val().length <= 120)) && (!newData.child('email').exists() || (newData.child('email').isString() && newData.child('email').val().length <= 254)) && (!newData.child('createdAt').exists() || newData.child('createdAt').isNumber()) && (!newData.child('reviewNote').exists() || (newData.child('reviewNote').isString() && newData.child('reviewNote').val().length <= 500)) && (!newData.child('reviewImageRef').exists() || newData.child('reviewImageRef').isString()) && (!newData.child('reviewImageData').exists() || (newData.child('reviewImageData').isString() && newData.child('reviewImageData').val().length <= 716800 && newData.child('reviewImageData').val().matches(/^data:image\\/webp;base64,[A-Za-z0-9+/]+={0,2}$/))) && (!newData.child('reviewedBy').exists() || newData.child('reviewedBy').isString()) && (!newData.child('reviewedAt').exists() || newData.child('reviewedAt').isNumber())"
+        }
+      }
+    }
+  }
+}
