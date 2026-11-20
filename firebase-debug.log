@@ -1,0 +1,71 @@
+[debug] [2026-11-20T04:55:41.506Z] ----------------------------------------------------------------------
+[debug] [2026-11-20T04:55:41.519Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ASUS\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js database:remove /attendance --project chamcong1-57c90 --force
+[debug] [2026-11-20T04:55:41.520Z] CLI Version:   15.35.0
+[debug] [2026-11-20T04:55:41.520Z] Platform:      win32
+[debug] [2026-11-20T04:55:41.520Z] Node Version:  v24.19.0
+[debug] [2026-11-20T04:55:41.520Z] Detected Agent: codex_cli
+[debug] [2026-11-20T04:55:41.521Z] Time:          Fri Nov 20 2026 11:55:41 GMT+0700 (Giờ Đông Dương)
+[debug] [2026-11-20T04:55:41.523Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-11-20T04:55:44.034Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-11-20T04:55:44.034Z] > authorizing via signed-in user (quanghuymku233@gmail.com)
+[debug] [2026-11-20T04:55:44.034Z] [iam] checking project chamcong1-57c90 for permissions ["firebase.projects.get","firebasedatabase.instances.update"]
+[debug] [2026-11-20T04:55:44.057Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:55:44.058Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:55:44.059Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions [none]
+[debug] [2026-11-20T04:55:44.059Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-20T04:55:44.059Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.update"]}
+[debug] [2026-11-20T04:55:45.473Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions 200
+[debug] [2026-11-20T04:55:45.474Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.update"]}
+[debug] [2026-11-20T04:55:45.475Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:55:45.475Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:55:45.476Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/chamcong1-57c90 [none]
+[debug] [2026-11-20T04:55:46.024Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/chamcong1-57c90 200
+[debug] [2026-11-20T04:55:46.024Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/chamcong1-57c90 {"projectId":"chamcong1-57c90","projectNumber":"9357913722","displayName":"chamCong1","name":"projects/chamcong1-57c90","resources":{"hostingSite":"chamcong1-57c90","realtimeDatabaseInstance":"chamcong1-57c90-default-rtdb"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_012bec30-ba13-42b9-a293-f294bbd15834"}
+[debug] [2026-11-20T04:55:46.025Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:55:46.025Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:55:46.025Z] >>> [apiv2][query] GET https://firebasedatabase.googleapis.com/v1beta/projects/chamcong1-57c90/locations/-/instances/chamcong1-57c90-default-rtdb [none]
+[debug] [2026-11-20T04:55:47.646Z] <<< [apiv2][status] GET https://firebasedatabase.googleapis.com/v1beta/projects/chamcong1-57c90/locations/-/instances/chamcong1-57c90-default-rtdb 200
+[debug] [2026-11-20T04:55:47.646Z] <<< [apiv2][body] GET https://firebasedatabase.googleapis.com/v1beta/projects/chamcong1-57c90/locations/-/instances/chamcong1-57c90-default-rtdb {"name":"projects/9357913722/locations/us-central1/instances/chamcong1-57c90-default-rtdb","project":"projects/9357913722","databaseUrl":"https://chamcong1-57c90-default-rtdb.firebaseio.com","type":"DEFAULT_DATABASE","state":"ACTIVE"}
+[debug] [2026-11-20T04:55:47.648Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:55:47.648Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:55:47.649Z] >>> [apiv2][query] PATCH https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json print=silent&writeSizeLimit=tiny&disableTriggers=false
+[debug] [2026-11-20T04:55:47.649Z] >>> [apiv2][body] PATCH https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json null
+[debug] [2026-11-20T04:55:48.560Z] <<< [apiv2][status] PATCH https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json 204
+[debug] [2026-11-20T04:55:48.560Z] <<< [apiv2][body] PATCH https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json [stream]
+[debug] [2026-11-20T04:55:48.560Z] [database] Sucessfully removed all data at /attendance time: 912ms
+[info] +  Data removed successfully 
+[debug] [2026-11-20T04:56:11.243Z] ----------------------------------------------------------------------
+[debug] [2026-11-20T04:56:11.255Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ASUS\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js database:get /attendance --project chamcong1-57c90 --shallow
+[debug] [2026-11-20T04:56:11.256Z] CLI Version:   15.35.0
+[debug] [2026-11-20T04:56:11.256Z] Platform:      win32
+[debug] [2026-11-20T04:56:11.256Z] Node Version:  v24.19.0
+[debug] [2026-11-20T04:56:11.256Z] Detected Agent: codex_cli
+[debug] [2026-11-20T04:56:11.256Z] Time:          Fri Nov 20 2026 11:56:11 GMT+0700 (Giờ Đông Dương)
+[debug] [2026-11-20T04:56:11.258Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-11-20T04:56:13.166Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-11-20T04:56:13.167Z] > authorizing via signed-in user (quanghuymku233@gmail.com)
+[debug] [2026-11-20T04:56:13.167Z] [iam] checking project chamcong1-57c90 for permissions ["firebase.projects.get","firebasedatabase.instances.get"]
+[debug] [2026-11-20T04:56:13.189Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:56:13.189Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:56:13.190Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions [none]
+[debug] [2026-11-20T04:56:13.191Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-20T04:56:13.191Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.get"]}
+[debug] [2026-11-20T04:56:14.541Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions 200
+[debug] [2026-11-20T04:56:14.542Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.get"]}
+[debug] [2026-11-20T04:56:14.543Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:56:14.543Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:56:14.544Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/chamcong1-57c90 [none]
+[debug] [2026-11-20T04:56:15.136Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/chamcong1-57c90 200
+[debug] [2026-11-20T04:56:15.136Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/chamcong1-57c90 {"projectId":"chamcong1-57c90","projectNumber":"9357913722","displayName":"chamCong1","name":"projects/chamcong1-57c90","resources":{"hostingSite":"chamcong1-57c90","realtimeDatabaseInstance":"chamcong1-57c90-default-rtdb"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_012bec30-ba13-42b9-a293-f294bbd15834"}
+[debug] [2026-11-20T04:56:15.136Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:56:15.136Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:56:15.137Z] >>> [apiv2][query] GET https://firebasedatabase.googleapis.com/v1beta/projects/chamcong1-57c90/locations/-/instances/chamcong1-57c90-default-rtdb [none]
+[debug] [2026-11-20T04:56:16.687Z] <<< [apiv2][status] GET https://firebasedatabase.googleapis.com/v1beta/projects/chamcong1-57c90/locations/-/instances/chamcong1-57c90-default-rtdb 200
+[debug] [2026-11-20T04:56:16.687Z] <<< [apiv2][body] GET https://firebasedatabase.googleapis.com/v1beta/projects/chamcong1-57c90/locations/-/instances/chamcong1-57c90-default-rtdb {"name":"projects/9357913722/locations/us-central1/instances/chamcong1-57c90-default-rtdb","project":"projects/9357913722","databaseUrl":"https://chamcong1-57c90-default-rtdb.firebaseio.com","type":"DEFAULT_DATABASE","state":"ACTIVE"}
+[debug] [2026-11-20T04:56:16.688Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:56:16.689Z] Checked if tokens are valid: true, expires at: 1795152219894
+[debug] [2026-11-20T04:56:16.689Z] >>> [apiv2][query] GET https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json shallow=true
+[debug] [2026-11-20T04:56:17.249Z] <<< [apiv2][status] GET https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json 200
+[debug] [2026-11-20T04:56:17.249Z] <<< [apiv2][body] GET https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json [stream]

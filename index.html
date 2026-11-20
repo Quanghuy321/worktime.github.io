@@ -8021,7 +8021,8 @@ th {
 
                     <div class="filter-group">
                         <select id="adminAttendanceViewMode" aria-label="Chọn phạm vi ngày công">
-                            <option value="date">Theo ngày</option>
+                            <option value="records" selected>Ngày công đã ghi nhận</option>
+                            <option value="date">Tất cả nhân viên trong ngày</option>
                             <option value="all">Tất cả ngày công</option>
                         </select>
                         <label id="adminAttendanceDateField" class="admin-attendance-date-field" for="adminAttendanceDate">
@@ -13381,7 +13382,9 @@ async function loadAdminAttendance() {
         return;
     }
 
-    const viewAll = $("adminAttendanceViewMode")?.value === "all";
+    const viewMode = $("adminAttendanceViewMode")?.value || "records";
+    const viewAll = viewMode === "all";
+    const recordsOnly = viewMode === "all" || viewMode === "records";
     const dateKey = $("adminAttendanceDate")?.value ||
         formatDateKey(new Date());
 
@@ -13420,7 +13423,7 @@ async function loadAdminAttendance() {
                     );
                 })
                 .filter(function (item) {
-                    return !viewAll || item.record;
+                    return !recordsOnly || item.record;
                 })
                 .map(function ({ record, shift, dateKey: recordDate, recordIndex, hasAttendanceForDate }) {
                     let status;
@@ -13481,7 +13484,7 @@ async function loadAdminAttendance() {
             ? rows.join("")
             : emptyRow(
                 9,
-                viewAll ? "Chưa có ngày công nào được ghi nhận." : "Không có nhân viên."
+                recordsOnly ? "Không có dữ liệu chấm công trong phạm vi đã chọn." : "Không có nhân viên."
             );
     } catch (error) {
         console.error("Admin attendance error:", error);
