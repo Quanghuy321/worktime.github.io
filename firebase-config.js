@@ -105,22 +105,3 @@ window.workTimeFirebase = {
 
 };
 
-
-// ============================================================
-// 10. DEBUG
-// ============================================================
-
-console.log("======================================");
-console.log("WORKTIME FIREBASE");
-console.log("======================================");
-console.log("Firebase App:", window.workTimeFirebase.app);
-console.log("Firebase Auth:", window.workTimeFirebase.auth);
-console.log(
-    "Firebase Database:",
-    window.workTimeFirebase.database
-);
-console.log(
-    "Firebase Storage:",
-    window.workTimeFirebase.storage
-);
-console.log("======================================");

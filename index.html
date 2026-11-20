@@ -6,12 +6,7 @@
     <meta
 
     name="viewport" content="width=device-width, initial-scale=1.0">
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""
-    >
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link
         rel="icon"
         type="image/svg+xml"
@@ -7059,7 +7054,7 @@ th {
                     Chưa có vị trí chấm công được ghi nhận.
                 </div>
                 <small style="display: block; margin-top: 8px; color: #64748b;">
-                    Địa chỉ được tra qua OpenStreetMap khi cần; tọa độ GPS được gửi đến dịch vụ này để tìm địa chỉ.
+                    Địa chỉ được tra qua OpenStreetMap khi cần; ứng dụng chỉ lấy GPS lúc nhân viên bấm chấm công.
                 </small>
             </section>
 
@@ -8297,11 +8292,7 @@ th {
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-<script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <!-- =====================================================
      FIREBASE CONFIG
@@ -8335,6 +8326,9 @@ const firebaseConfig = {
   appId: "1:9357913722:web:93974bb5acd25f73fa95c3",
   measurementId: "G-ZYCVR1699M"
 };
+
+// Google Cloud Console -> APIs & Services -> Credentials.
+// Enable Maps JavaScript API and restrict this key to your production domains.
 
 // ============================================================
 // 2. KHỞI TẠO FIREBASE
@@ -8414,24 +8408,6 @@ window.workTimeFirebase = {
 };
 
 
-// ============================================================
-// 10. DEBUG
-// ============================================================
-
-console.log("======================================");
-console.log("WORKTIME FIREBASE");
-console.log("======================================");
-console.log("Firebase App:", window.workTimeFirebase.app);
-console.log("Firebase Auth:", window.workTimeFirebase.auth);
-console.log(
-    "Firebase Database:",
-    window.workTimeFirebase.database
-);
-console.log(
-    "Firebase Storage:",
-    window.workTimeFirebase.storage
-);
-console.log("======================================");
 </script>
 
 <!-- =====================================================
@@ -8832,7 +8808,19 @@ function setupBasicEvents() {
         button.textContent = "Đang tra địa chỉ...";
         getAttendanceLocationAddress(coordinates)
             .then((address) => {
-                button.replaceWith(document.createTextNode(address || "Không tìm thấy địa chỉ."));
+                const addressText = button.parentElement?.querySelector("[data-attendance-address-text]");
+                if (addressText) {
+                    addressText.textContent = address || "Không tìm thấy địa chỉ.";
+                    addressText.style.color = address ? "" : "#b91c1c";
+                }
+                button.remove();
+                if (address && button.dataset.uid && button.dataset.attendanceKey &&
+                    ["checkInLocation", "checkOutLocation"].includes(button.dataset.locationField)) {
+                    return db.ref(
+                        `attendance/${button.dataset.uid}/${button.dataset.attendanceKey}/${button.dataset.locationField}/address`
+                    ).set(address);
+                }
+                return null;
             })
             .catch((error) => {
                 console.error("Could not resolve attendance address:", error);
@@ -10567,29 +10555,54 @@ async function getAttendanceLocationAddress(location) {
         }
         lastAttendanceAddressRequestAt = Date.now();
 
-        const url = new URL("https://nominatim.openstreetmap.org/reverse");
-        url.search = new URLSearchParams({
-            format: "jsonv2",
-            lat: String(coordinates.latitude),
-            lon: String(coordinates.longitude),
-            zoom: "18",
-            addressdetails: "1"
-        });
-
-        const response = await fetch(url, {
-            headers: {
-                "Accept": "application/json",
-                "Accept-Language": "vi"
-            }
-        });
-        if (!response.ok) {
-            throw new Error(`Tra địa chỉ thất bại (HTTP ${response.status}).`);
+        let address = "";
+        try {
+            const url = new URL("https://nominatim.openstreetmap.org/reverse");
+            url.search = new URLSearchParams({
+                format: "jsonv2",
+                lat: String(coordinates.latitude),
+                lon: String(coordinates.longitude),
+                zoom: "18",
+                addressdetails: "1"
+            });
+            const response = await fetch(url, {
+                headers: { "Accept": "application/json", "Accept-Language": "vi" }
+            });
+            if (!response.ok) throw new Error(`Nominatim HTTP ${response.status}`);
+            const result = await response.json();
+            address = typeof result.display_name === "string" ? result.display_name.trim() : "";
+        } catch (nominatimError) {
+            console.warn("Nominatim address lookup failed; trying Photon:", nominatimError);
         }
 
-        const result = await response.json();
-        const address = typeof result.display_name === "string"
-            ? result.display_name.trim()
-            : "";
+        if (!address) {
+            const photonUrl = new URL("https://photon.komoot.io/reverse");
+            photonUrl.search = new URLSearchParams({
+                lat: String(coordinates.latitude),
+                lon: String(coordinates.longitude),
+                lang: "vi"
+            });
+            const photonResponse = await fetch(photonUrl, {
+                headers: { "Accept": "application/json" }
+            });
+            if (!photonResponse.ok) {
+                throw new Error(`Không tra được địa chỉ (Photon HTTP ${photonResponse.status}).`);
+            }
+            const photonResult = await photonResponse.json();
+            const properties = photonResult.features?.[0]?.properties || {};
+            const streetLine = [properties.housenumber, properties.street]
+                .filter(Boolean)
+                .join(" ");
+            const addressParts = [
+                streetLine || properties.name,
+                properties.suburb || properties.district,
+                properties.city || properties.locality,
+                properties.state,
+                properties.country
+            ].filter(Boolean);
+            address = [...new Map(addressParts.map((part) => [part.toLocaleLowerCase("vi"), part])).values()]
+                .join(", ");
+        }
         if (!address) {
             throw new Error("Dịch vụ bản đồ không tìm thấy địa chỉ cho vị trí này.");
         }
@@ -10701,18 +10714,24 @@ function getAttendanceCoordinates(location) {
     return { latitude, longitude };
 }
 
-function renderAdminAttendanceAddress(location, label) {
+function renderAdminAttendanceAddress(location, label, recordRef = {}) {
     const address = typeof location?.address === "string" ? location.address.trim() : "";
-    if (address) {
-        return `<div><strong>${escapeHtml(label)}:</strong> ${escapeHtml(address)}</div>`;
-    }
-
     const coordinates = getAttendanceCoordinates(location);
     if (!coordinates) {
-        return `<div><strong>${escapeHtml(label)}:</strong> <span style="color: #94a3b8;">—</span></div>`;
+        return `<div><strong>${escapeHtml(label)}:</strong> <span style="color: #94a3b8;">Chưa có GPS</span></div>`;
     }
 
-    return `<div><strong>${escapeHtml(label)}:</strong> <button type="button" class="btn btn-secondary" style="padding: 4px 8px; margin: 2px;" data-attendance-address="true" data-latitude="${coordinates.latitude}" data-longitude="${coordinates.longitude}">Tra địa chỉ</button></div>`;
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${coordinates.latitude},${coordinates.longitude}`;
+    const addressContent = address
+        ? escapeHtml(address)
+        : `<span data-attendance-address-text="true" style="color:#64748b;">Chưa tra được địa chỉ</span> <button type="button" class="btn btn-secondary" style="padding: 4px 8px; margin: 2px;" data-attendance-address="true" data-latitude="${coordinates.latitude}" data-longitude="${coordinates.longitude}" data-uid="${escapeHtml(recordRef.uid || "")}" data-attendance-key="${escapeHtml(recordRef.attendanceKey || "")}" data-location-field="${escapeHtml(recordRef.locationField || "")}">Thử tra lại</button>`;
+    const gpsDetails = [
+        !address && `${coordinates.latitude.toFixed(6)}, ${coordinates.longitude.toFixed(6)}`,
+        Number.isFinite(Number(location?.accuracyMeters))
+            ? `sai số GPS ±${Math.round(Number(location.accuracyMeters))} m`
+            : null
+    ].filter(Boolean).join(" · ");
+    return `<div><strong>${escapeHtml(label)}:</strong> ${addressContent}<br><a class="btn btn-secondary" style="display: inline-block; padding: 4px 8px; margin: 2px;" href="${mapUrl}" target="_blank" rel="noopener noreferrer">Xem địa chỉ và vị trí trên Google Maps</a>${gpsDetails ? `<small style="display:block;color:#64748b;">${gpsDetails}</small>` : ""}</div>`;
 }
 
 function initializeAttendanceGeofenceMap() {
@@ -10737,7 +10756,6 @@ function initializeAttendanceGeofenceMap() {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>'
     }).addTo(attendanceGeofenceMap);
-
     attendanceGeofenceSavedLayer = L.featureGroup().addTo(attendanceGeofenceMap);
     attendanceGeofenceMap.on("click", (event) => {
         $("attendanceGeofenceLatitude").value = event.latlng.lat.toFixed(7);
@@ -10808,9 +10826,7 @@ function updateAttendanceGeofenceMapSelection() {
                 weight: 2
             }).addTo(attendanceGeofenceMap);
         } else {
-            attendanceGeofenceSelectionCircle
-                .setLatLng(center)
-                .setRadius(radiusMeters);
+            attendanceGeofenceSelectionCircle.setLatLng(center).setRadius(radiusMeters);
         }
     } else if (attendanceGeofenceSelectionCircle) {
         attendanceGeofenceMap.removeLayer(attendanceGeofenceSelectionCircle);
@@ -10833,16 +10849,13 @@ async function refreshAttendanceGeofenceMap() {
         attendanceGeofenceSavedLayer.clearLayers();
 
         geofences.forEach((geofence) => {
-            const circle = L.circle(
-                [geofence.latitude, geofence.longitude],
-                {
+            const circle = L.circle([geofence.latitude, geofence.longitude], {
                     radius: geofence.radiusMeters,
                     color: "#16a34a",
                     fillColor: "#22c55e",
                     fillOpacity: 0.08,
                     weight: 2
-                }
-            );
+                });
             const popup = document.createElement("strong");
             popup.textContent = `${geofence.name} · ${geofence.radiusMeters} m`;
             circle.bindPopup(popup);
@@ -10850,8 +10863,7 @@ async function refreshAttendanceGeofenceMap() {
         });
 
         if (geofences.length) {
-            const bounds = attendanceGeofenceSavedLayer.getBounds();
-            attendanceGeofenceMap.fitBounds(bounds, {
+            attendanceGeofenceMap.fitBounds(attendanceGeofenceSavedLayer.getBounds(), {
                 padding: [24, 24],
                 maxZoom: 16
             });
@@ -11039,10 +11051,7 @@ async function setAttendanceGeofenceFromCurrentLocation() {
         $("attendanceGeofenceLongitude").value = position.longitude.toFixed(7);
         updateAttendanceGeofenceMapSelection();
         if (attendanceGeofenceMap) {
-            attendanceGeofenceMap.setView(
-                [position.latitude, position.longitude],
-                17
-            );
+            attendanceGeofenceMap?.setView([position.latitude, position.longitude], 17);
         }
         showToast(
             `Đã lấy vị trí hiện tại (sai số khoảng ±${Math.round(position.accuracy)} m).`,
@@ -12721,9 +12730,8 @@ async function loadAdminDashboard() {
 
     try {
         await loadAttendanceGeofenceSettings();
-        initializeAttendanceGeofenceMap();
+        await initializeAttendanceGeofenceMap();
         await refreshAttendanceGeofenceMap();
-        window.setTimeout(() => attendanceGeofenceMap?.invalidateSize(), 0);
 
         const usersSnapshot =
             await db
@@ -13432,10 +13440,13 @@ async function loadAdminAttendance() {
                     }
 
                     const employeeName = user.name || "Chưa có tên";
+                    const attendanceKey = userAttendance[`${recordDate}_${shift}`]
+                        ? `${recordDate}_${shift}`
+                        : (userAttendance[recordDate] ? recordDate : `${recordDate}_${shift}`);
                     const locationActions = `
                         <div class="attendance-address-cell">
-                            ${renderAdminAttendanceAddress(record?.checkInLocation, "Vào")}
-                            ${renderAdminAttendanceAddress(record?.checkOutLocation, "Ra")}
+                            ${renderAdminAttendanceAddress(record?.checkInLocation, "Vào", { uid: user.uid, attendanceKey, locationField: "checkInLocation" })}
+                            ${renderAdminAttendanceAddress(record?.checkOutLocation, "Ra", { uid: user.uid, attendanceKey, locationField: "checkOutLocation" })}
                         </div>
                     `;
                     const resetAction = recordIndex === 0 && hasAttendanceForDate
