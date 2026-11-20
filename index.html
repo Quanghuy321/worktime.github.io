@@ -4875,13 +4875,22 @@ th {
 
 #page-adminAttendance th:nth-child(1), #page-adminAttendance td:nth-child(1) { width: 9%; }
 #page-adminAttendance th:nth-child(2), #page-adminAttendance td:nth-child(2) { width: 14%; }
-#page-adminAttendance th:nth-child(3), #page-adminAttendance td:nth-child(3) { width: 18%; color: #64748b; }
+#page-adminAttendance th:nth-child(3), #page-adminAttendance td:nth-child(3) { width: 15%; color: #64748b; }
 #page-adminAttendance th:nth-child(4), #page-adminAttendance td:nth-child(4) { width: 8%; }
 #page-adminAttendance th:nth-child(5), #page-adminAttendance td:nth-child(5),
 #page-adminAttendance th:nth-child(6), #page-adminAttendance td:nth-child(6) { width: 8%; text-align: center; }
-#page-adminAttendance th:nth-child(7), #page-adminAttendance td:nth-child(7) { width: 18%; }
+#page-adminAttendance th:nth-child(7), #page-adminAttendance td:nth-child(7) { width: 16%; }
 #page-adminAttendance th:nth-child(8), #page-adminAttendance td:nth-child(8) { width: 10%; text-align: center; }
-#page-adminAttendance th:nth-child(9), #page-adminAttendance td:nth-child(9) { width: 7%; text-align: center; }
+#page-adminAttendance th:nth-child(9), #page-adminAttendance td:nth-child(9) { width: 12%; text-align: center; }
+
+#page-adminAttendance .attendance-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
 
 #page-adminAttendance td:nth-child(3),
 #page-adminAttendance .attendance-address-cell,
@@ -4907,9 +4916,9 @@ th {
 
 #page-adminAttendance td:nth-child(9) .btn {
   min-height: 32px;
-  padding: 6px 8px;
-  font-size: 11px;
-  white-space: normal;
+  padding: 6px 7px;
+  font-size: 10px;
+  white-space: nowrap;
 }
 
 #page-adminAttendance td .badge,
@@ -13474,7 +13483,7 @@ async function loadAdminAttendance() {
                             <td>${escapeHtml(getAttendanceTimeText(record, "checkOut") || "--")}</td>
                             <td>${locationActions}</td>
                             <td>${status}</td>
-                            <td>${resetAction} ${deleteAction}</td>
+                            <td><div class="attendance-row-actions">${resetAction}${deleteAction}</div></td>
                         </tr>
                     `;
                 });
