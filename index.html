@@ -8791,6 +8791,12 @@ function setupBasicEvents() {
             return;
         }
 
+        const deleteButton = event.target.closest("[data-attendance-delete]");
+        if (deleteButton) {
+            deleteAdminAttendanceRecord(deleteButton);
+            return;
+        }
+
         const button = event.target.closest("[data-attendance-address]");
         if (!button) {
             return;
@@ -13452,7 +13458,9 @@ async function loadAdminAttendance() {
                     const resetAction = recordIndex === 0 && hasAttendanceForDate
                         ? `<button type="button" class="btn btn-secondary" data-attendance-reset="true" data-uid="${escapeHtml(user.uid)}" data-date="${escapeHtml(recordDate)}" data-employee="${escapeHtml(employeeName)}">Reset ngày</button>`
                         : "";
-
+                    const deleteAction = record
+                        ? `<button type="button" class="btn btn-secondary" data-attendance-delete="true" data-uid="${escapeHtml(user.uid)}" data-attendance-key="${escapeHtml(attendanceKey)}" data-employee="${escapeHtml(employeeName)}" data-shift="${escapeHtml(shift)}">Xóa ca</button>`
+                        : "";
                     return `
                         <tr>
                             <td>${escapeHtml(recordDate)}</td>
@@ -13463,7 +13471,7 @@ async function loadAdminAttendance() {
                             <td>${escapeHtml(getAttendanceTimeText(record, "checkOut") || "--")}</td>
                             <td>${locationActions}</td>
                             <td>${status}</td>
-                            <td>${resetAction}</td>
+                            <td>${resetAction} ${deleteAction}</td>
                         </tr>
                     `;
                 });
@@ -13503,11 +13511,13 @@ async function resetAdminAttendanceDay(button) {
 
     button.disabled = true;
     try {
-        await db.ref().update({
-            [`attendance/${uid}/${dateKey}`]: null,
-            [`attendance/${uid}/${dateKey}_day`]: null,
-            [`attendance/${uid}/${dateKey}_night`]: null
-        });
+        await Promise.all([
+            dateKey,
+            `${dateKey}_day`,
+            `${dateKey}_night`
+        ].map((attendanceKey) =>
+            db.ref(`attendance/${uid}/${attendanceKey}`).remove()
+        ));
         showToast(`Đã reset chấm công ngày ${dateKey} của ${employeeName}.`, "success");
         await loadAdminAttendance();
     } catch (error) {
@@ -13517,6 +13527,37 @@ async function resetAdminAttendanceDay(button) {
     }
 }
 
+
+async function deleteAdminAttendanceRecord(button) {
+    if (!isAdmin() || !db) {
+        showToast("B\u1ea1n kh\u00f4ng c\u00f3 quy\u1ec1n x\u00f3a ch\u1ea5m c\u00f4ng.", "error");
+        return;
+    }
+
+    const uid = button.dataset.uid;
+    const attendanceKey = button.dataset.attendanceKey;
+    const employeeName = button.dataset.employee || "nh\u00e2n vi\u00ean n\u00e0y";
+    const shiftName = button.dataset.shift === "night" ? "ca \u0111\u00eam" : "ca ng\u00e0y";
+    if (!uid || !/^\d{4}-\d{2}-\d{2}(?:_(?:day|night))?$/.test(attendanceKey || "")) {
+        showToast("Th\u00f4ng tin b\u1ea3n ghi ch\u1ea5m c\u00f4ng kh\u00f4ng h\u1ee3p l\u1ec7.", "error");
+        return;
+    }
+
+    if (!window.confirm(`X\u00f3a b\u1ea3n ghi ${shiftName} ng\u00e0y ${attendanceKey.slice(0, 10)} c\u1ee7a ${employeeName}?`)) {
+        return;
+    }
+
+    button.disabled = true;
+    try {
+        await db.ref(`attendance/${uid}/${attendanceKey}`).remove();
+        showToast("\u0110\u00e3 x\u00f3a b\u1ea3n ghi ch\u1ea5m c\u00f4ng.", "success");
+        await loadAdminAttendance();
+    } catch (error) {
+        console.error("Delete attendance record error:", error);
+        showToast(getFirebaseErrorMessage(error), "error");
+        button.disabled = false;
+    }
+}
 
 /* =====================================================
    ADMIN LEAVE
