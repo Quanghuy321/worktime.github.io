@@ -7040,15 +7040,15 @@ th {
             <section class="content-card" style="margin-bottom: 20px;">
                 <div class="card-header">
                     <div>
-                        <h3>Vị trí chấm công</h3>
-                        <p>Chỉ chấm công được khi bạn ở trong khu vực GPS do quản trị viên thiết lập.</p>
+                        <h3>Chấm công bằng mã QR</h3>
+                        <p>Quét mã QR đang hiển thị tại nơi làm việc để xác nhận ca vào hoặc ca ra.</p>
                     </div>
                 </div>
                 <p id="attendanceGeofenceStatus" role="status" style="margin: 0; color: #475569;">
-                    Đang kiểm tra khu vực chấm công...
+                    Mã QR chỉ có hiệu lực trong thời gian ngắn.
                 </p>
                 <small style="display: block; margin-top: 8px; color: #64748b;">
-                    Ứng dụng chỉ lấy vị trí khi bạn bấm chấm công; không theo dõi liên tục.
+                    Mở camera khi được hỏi và quét mã QR tại nơi làm việc.
                 </small>
             </section>
 
@@ -7056,14 +7056,14 @@ th {
                 <div class="card-header">
                     <div>
                         <h3>Địa chỉ chấm công</h3>
-                        <p>Địa chỉ được ghi nhận khi chấm công vào/ra.</p>
+                        <p>Địa điểm được ghi nhận theo mã QR bạn đã quét.</p>
                     </div>
                 </div>
                 <div id="myAttendanceAddressStatus" role="status" style="margin: 0; color: #64748b;">
                     Chưa có vị trí chấm công được ghi nhận.
                 </div>
                 <small style="display: block; margin-top: 8px; color: #64748b;">
-                    Địa chỉ được tra qua OpenStreetMap khi cần; ứng dụng chỉ lấy GPS lúc nhân viên bấm chấm công.
+                    Địa chỉ lấy từ khu vực QR do quản trị viên thiết lập.
                 </small>
             </section>
 
@@ -7774,10 +7774,22 @@ th {
                 <section class="content-card" style="margin-top: 20px;">
                     <div class="card-header">
                         <div>
-                            <h3>Thiết lập khu vực chấm công GPS</h3>
-                            <p>Nhân viên chỉ chấm công vào/ra khi vị trí nằm trong bán kính này.</p>
+                            <h3>Mã QR chấm công tại nơi làm việc</h3>
+                            <p>Giữ màn hình này mở để nhân viên quét mã QR luân phiên khi vào ca và ra ca.</p>
                         </div>
                     </div>
+                    <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px;margin-bottom:22px;">
+                        <div id="attendanceQrCode" aria-label="Mã QR chấm công" style="width:240px;min-height:240px;padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;"></div>
+                        <div style="flex:1;min-width:220px;">
+                            <label for="attendanceQrGeofenceSelect">Địa điểm</label>
+                            <select id="attendanceQrGeofenceSelect" style="display:block;width:100%;max-width:420px;margin:6px 0 12px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;"></select>
+                            <p id="attendanceQrStatus" role="status" style="color:#475569;">Đang chuẩn bị mã QR…</p>
+                            <small style="color:#64748b;">Mã tự đổi định kỳ. Nhân viên cần quét trực tiếp tại địa điểm này.</small>
+                        </div>
+                    </div>
+                    <hr style="border:0;border-top:1px solid #e2e8f0;margin:20px 0;">
+                    <details>
+                        <summary style="cursor:pointer;font-weight:600;">Cấu hình tọa độ GPS (tùy chọn)</summary>
                     <p style="margin-bottom: 10px; color: #475569;">
                         Nhấn vào bản đồ để chọn tâm khu vực. Có thể phóng to/thu nhỏ và kéo bản đồ để tìm địa điểm.
                     </p>
@@ -7824,6 +7836,7 @@ th {
                         </small>
                     </form>
                     <div id="attendanceGeofenceList" aria-live="polite" style="display: grid; gap: 10px; margin-top: 18px;"></div>
+                    </details>
                 </section>
 
             </div>
@@ -8299,6 +8312,13 @@ th {
     class="toast-container"
 ></div>
 
+<dialog id="attendanceQrScanDialog" style="width:min(480px,calc(100% - 24px));padding:18px;border:0;border-radius:16px;box-shadow:0 20px 60px rgba(15,23,42,.3);">
+    <h3 style="margin:0 0 8px;">Quét mã QR chấm công</h3>
+    <p id="attendanceQrScanStatus" style="margin:0 0 12px;color:#64748b;">Hướng camera vào mã QR tại nơi làm việc.</p>
+    <div id="attendanceQrReader" style="width:100%;"></div>
+    <button id="attendanceQrScanCancel" type="button" class="btn btn-secondary" style="margin-top:12px;">Hủy</button>
+</dialog>
+
 
 <!-- =====================================================
      FIREBASE SDK
@@ -8309,6 +8329,8 @@ th {
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
@@ -8483,6 +8505,10 @@ let attendanceGeofenceSavedLayer = null;
 const attendanceAddressCache = new Map();
 let attendanceAddressRequestQueue = Promise.resolve();
 let lastAttendanceAddressRequestAt = 0;
+let attendanceQrRefreshTimer = null;
+let attendanceQrRefreshInProgress = false;
+let attendanceQrScanner = null;
+let attendanceQrScanResolver = null;
 
 
 /* =====================================================
@@ -8796,6 +8822,12 @@ function setupBasicEvents() {
         "click",
         searchAttendanceGeofenceAddress
     );
+    $("attendanceQrGeofenceSelect")?.addEventListener("change", refreshAttendanceQrToken);
+    $("attendanceQrScanCancel")?.addEventListener("click", () => finishAttendanceQrScan(null));
+    $("attendanceQrScanDialog")?.addEventListener("cancel", function (event) {
+        event.preventDefault();
+        finishAttendanceQrScan(null);
+    });
 
     ["attendanceGeofenceLatitude", "attendanceGeofenceLongitude", "attendanceGeofenceRadius"]
         .forEach((id) => {
@@ -10684,8 +10716,8 @@ function showAttendanceAddresses(statusId, locations) {
         .map((location) => {
             const coordinates = getAttendanceCoordinates(location);
             const hasAddress = typeof location?.address === "string" && location.address.trim();
-            return location && (coordinates || hasAddress)
-                ? { ...location, ...(coordinates || {}) }
+            return location && (coordinates || hasAddress || location.geofenceName)
+                ? { ...location, ...(coordinates || {}), address: location.address || location.geofenceName || "" }
                 : null;
         })
         .filter(Boolean);
@@ -11131,7 +11163,8 @@ async function getAttendanceGeofences() {
                 name: geofence.name || "Khu vực chấm công",
                 latitude: geofence.latitude,
                 longitude: geofence.longitude,
-                radiusMeters: geofence.radiusMeters
+                radiusMeters: geofence.radiusMeters,
+                address: geofence.address || ""
             });
         }
     });
@@ -11148,11 +11181,146 @@ async function getAttendanceGeofences() {
             name: legacyGeofence.name || "Khu vực chấm công",
             latitude: legacyGeofence.latitude,
             longitude: legacyGeofence.longitude,
-            radiusMeters: legacyGeofence.radiusMeters
+            radiusMeters: legacyGeofence.radiusMeters,
+            address: legacyGeofence.address || ""
         });
     }
 
     return geofences;
+}
+
+const ATTENDANCE_QR_VALID_MS = 75 * 1000;
+
+function getAttendanceServerNow() {
+    const offset = Number(window.firebaseServerTimeOffset || 0);
+    return Date.now() + (Number.isFinite(offset) ? offset : 0);
+}
+
+function createAttendanceQrToken() {
+    const bytes = new Uint8Array(24);
+    crypto.getRandomValues(bytes);
+    return [...bytes].map(byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function refreshAttendanceQrToken() {
+    if (!isAdmin() || !db || attendanceQrRefreshInProgress) return;
+    const select = $("attendanceQrGeofenceSelect");
+    const container = $("attendanceQrCode");
+    const status = $("attendanceQrStatus");
+    if (!select || !container) return;
+    const geofence = (await getAttendanceGeofences().catch(() => []))
+        .find(item => item.id === select.value);
+    if (!geofence) {
+        container.replaceChildren();
+        if (status) status.textContent = "Hãy tạo và bật một địa điểm chấm công trước.";
+        return;
+    }
+    if (typeof QRCode === "undefined") {
+        if (status) status.textContent = "Không tải được thư viện tạo QR. Hãy tải lại trang.";
+        return;
+    }
+
+    attendanceQrRefreshInProgress = true;
+    try {
+        const token = createAttendanceQrToken();
+        const issuedAt = firebase.database.ServerValue.TIMESTAMP;
+        const expiresAt = getAttendanceServerNow() + ATTENDANCE_QR_VALID_MS;
+        await db.ref("attendanceSettings/activeQr").set({
+            token,
+            geofenceId: geofence.id,
+            geofenceName: geofence.name,
+            address: geofence.address || "",
+            issuedAt,
+            expiresAt
+        });
+        const payload = JSON.stringify({ app: "worktime-attendance", version: 1, token, geofenceId: geofence.id, geofenceName: geofence.name, address: geofence.address || "" });
+        container.replaceChildren();
+        new QRCode(container, { text: payload, width: 220, height: 220, colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+        if (status) status.textContent = `Mã có hiệu lực trong khoảng ${Math.ceil(ATTENDANCE_QR_VALID_MS / 1000)} giây · ${geofence.name}`;
+    } catch (error) {
+        console.error("Could not refresh attendance QR:", error);
+        if (status) status.textContent = "Không tạo được mã QR. Kiểm tra quyền Firebase và thử tải lại.";
+    } finally {
+        attendanceQrRefreshInProgress = false;
+    }
+}
+
+function startAttendanceQrRotation() {
+    if (!isAdmin()) return;
+    clearInterval(attendanceQrRefreshTimer);
+    db.ref(".info/serverTimeOffset").once("value").then(snapshot => {
+        window.firebaseServerTimeOffset = Number(snapshot.val()) || 0;
+        refreshAttendanceQrToken();
+    }).catch(() => {});
+    refreshAttendanceQrToken();
+    attendanceQrRefreshTimer = setInterval(refreshAttendanceQrToken, 60 * 1000);
+}
+
+function stopAttendanceQrRotation() {
+    clearInterval(attendanceQrRefreshTimer);
+    attendanceQrRefreshTimer = null;
+}
+
+function finishAttendanceQrScan(result) {
+    const scanner = attendanceQrScanner;
+    const resolve = attendanceQrScanResolver;
+    attendanceQrScanner = null;
+    attendanceQrScanResolver = null;
+    const dialog = $("attendanceQrScanDialog");
+    const close = () => {
+        $("attendanceQrReader")?.replaceChildren();
+        if (dialog?.open) dialog.close();
+        resolve?.(result);
+    };
+    if (scanner) scanner.stop().catch(() => {}).finally(() => {
+        scanner.clear().catch(() => {});
+        close();
+    });
+    else close();
+}
+
+function scanAttendanceQrToken() {
+    if (typeof Html5Qrcode === "undefined") {
+        showToast("Không tải được chức năng quét QR. Hãy tải lại trang.", "error");
+        return Promise.resolve(null);
+    }
+    const dialog = $("attendanceQrScanDialog");
+    const status = $("attendanceQrScanStatus");
+    if (!dialog || !window.isSecureContext) {
+        showToast("Quét QR cần mở ứng dụng bằng HTTPS.", "error");
+        return Promise.resolve(null);
+    }
+    if (dialog.showModal) dialog.showModal();
+    return new Promise(resolve => {
+        attendanceQrScanResolver = resolve;
+        attendanceQrScanner = new Html5Qrcode("attendanceQrReader", { formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE] });
+        attendanceQrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 240, height: 240 } }, decoded => {
+            try {
+                const payload = JSON.parse(decoded);
+                if (payload.app !== "worktime-attendance" || payload.version !== 1 || !/^[a-f0-9]{48}$/.test(payload.token) || typeof payload.geofenceId !== "string") {
+                    throw new Error("QR không hợp lệ.");
+                }
+                finishAttendanceQrScan(payload);
+            } catch (error) {
+                if (status) status.textContent = error.message || "Mã QR không hợp lệ. Hãy quét mã tại nơi làm việc.";
+            }
+        }).catch(error => {
+            console.error("Could not start QR scanner:", error);
+            if (status) status.textContent = "Không mở được camera. Hãy cấp quyền camera cho trình duyệt và thử lại.";
+            showToast("Không mở được camera để quét QR.", "error");
+            finishAttendanceQrScan(null);
+        });
+    });
+}
+
+async function validateScannedAttendanceQr(payload) {
+    return {
+        token: payload.token,
+        geofenceId: payload.geofenceId,
+        geofenceName: payload.geofenceName || "Địa điểm chấm công",
+        address: payload.address || "",
+        method: "qr"
+    };
 }
 
 async function loadAttendanceGeofenceStatus() {
@@ -11171,8 +11339,8 @@ async function loadAttendanceGeofenceStatus() {
         }
 
         status.textContent = geofences.length === 1
-            ? `Khu vực: ${geofences[0].name} · bán kính ${geofences[0].radiusMeters} m. GPS sẽ được kiểm tra khi bạn chấm công.`
-            : `Có ${geofences.length} khu vực chấm công. Bạn có thể chấm công tại bất kỳ khu vực nào trong danh sách.`;
+            ? `Khu vực: ${geofences[0].name}. Hãy quét mã QR tại nơi làm việc khi chấm công.`
+            : `Có ${geofences.length} khu vực chấm công. Hãy quét mã QR đang hiển thị tại địa điểm tương ứng.`;
         status.style.color = "#475569";
     } catch (error) {
         console.error("Could not load attendance geofence status:", error);
@@ -11260,12 +11428,31 @@ async function renderAttendanceGeofenceList() {
 
     if (status) {
         status.textContent = geofences.length
-            ? `Đang có ${geofences.length} khu vực GPS. Chấm công được tại bất kỳ khu vực nào trong số này.`
-            : "Chưa có khu vực GPS được lưu.";
+            ? `Đang có ${geofences.length} địa điểm QR. Nhân viên quét mã tại địa điểm tương ứng để chấm công.`
+            : "Chưa có địa điểm chấm công. Hãy thêm địa điểm trước khi dùng QR.";
     }
 
     if (!list) {
         return;
+    }
+
+    const qrGeofenceSelect = $("attendanceQrGeofenceSelect");
+    if (qrGeofenceSelect) {
+        const previousId = qrGeofenceSelect.value;
+        qrGeofenceSelect.replaceChildren();
+        geofences.forEach(({ id, geofence }) => {
+            if (geofence.enabled !== true) return;
+            const option = document.createElement("option");
+            option.value = id;
+            option.textContent = geofence.name || "Khu vực chấm công";
+            qrGeofenceSelect.append(option);
+        });
+        if ([...qrGeofenceSelect.options].some(option => option.value === previousId)) {
+            qrGeofenceSelect.value = previousId;
+        }
+        if (qrGeofenceSelect.value !== previousId) {
+            refreshAttendanceQrToken();
+        }
     }
 
     list.replaceChildren();
@@ -11300,6 +11487,7 @@ async function renderAttendanceGeofenceList() {
     });
 
     await refreshAttendanceGeofenceMap();
+    startAttendanceQrRotation();
 }
 
 async function deleteAttendanceGeofence(id, legacy) {
@@ -11428,10 +11616,10 @@ async function checkIn() {
             return;
         }
 
-        const checkInLocation = await verifyAttendanceLocation();
-        if (!checkInLocation) {
-            return;
-        }
+        const scannedQr = await scanAttendanceQrToken();
+        if (!scannedQr) return;
+        const checkInQr = await validateScannedAttendanceQr(scannedQr);
+        if (!checkInQr) return;
 
         await ref.set({
             uid: currentUser.uid,
@@ -11442,7 +11630,13 @@ async function checkIn() {
             shiftName: shift.name,
             workUnits: 1,
             checkIn: firebase.database.ServerValue.TIMESTAMP,
-            checkInLocation,
+            checkInQrToken: checkInQr.token,
+            checkInLocation: {
+                geofenceId: checkInQr.geofenceId,
+                geofenceName: checkInQr.geofenceName,
+                address: checkInQr.address,
+                method: "qr"
+            },
             updatedAt: firebase.database.ServerValue.TIMESTAMP
         });
 
@@ -11525,15 +11719,21 @@ async function checkOut() {
             return;
         }
 
-        const checkOutLocation = await verifyAttendanceLocation();
-        if (!checkOutLocation) {
-            return;
-        }
+        const scannedQr = await scanAttendanceQrToken();
+        if (!scannedQr) return;
+        const checkOutQr = await validateScannedAttendanceQr(scannedQr);
+        if (!checkOutQr) return;
 
+        await ref.child("checkOutQrToken").set(checkOutQr.token);
         await ref.child("checkOut").set(firebase.database.ServerValue.TIMESTAMP);
         let savedCheckOutLocation = true;
         try {
-            await ref.child("checkOutLocation").set(checkOutLocation);
+            await ref.child("checkOutLocation").set({
+                geofenceId: checkOutQr.geofenceId,
+                geofenceName: checkOutQr.geofenceName,
+                address: checkOutQr.address,
+                method: "qr"
+            });
         } catch (locationError) {
             savedCheckOutLocation = false;
             console.error("Could not save check-out location:", locationError);
@@ -14040,6 +14240,7 @@ window.deleteAdminLeave = deleteAdminLeave;
 async function logout() {
 
     stopMyPayrollLiveUpdates();
+    stopAttendanceQrRotation();
 
     if (!auth) {
 
