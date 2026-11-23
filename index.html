@@ -10880,9 +10880,13 @@ async function searchAttendanceGeofenceAddress() {
         } catch (nominatimError) {
             console.warn("Nominatim address search failed; trying Photon:", nominatimError);
             const photonUrl = new URL("https://photon.komoot.io/api/");
-            photonUrl.search = new URLSearchParams({ q: query, limit: "1", lang: "vi" });
+            // Do not force a language: public Photon instances may not index every language.
+            photonUrl.search = new URLSearchParams({ q: query, limit: "1" });
             const response = await fetch(photonUrl, { headers: { "Accept": "application/json" } });
-            if (!response.ok) throw new Error(`Không tìm được địa chỉ (HTTP ${response.status}).`);
+            if (!response.ok) {
+                const detail = (await response.text()).slice(0, 180).trim();
+                throw new Error(`Không tìm được địa chỉ (Photon HTTP ${response.status}${detail ? `: ${detail}` : ""}).`);
+            }
             const feature = (await response.json()).features?.[0];
             const [longitude, latitude] = feature?.geometry?.coordinates || [];
             if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
@@ -11423,7 +11427,7 @@ async function checkIn() {
             return;
         }
 
-        const result = await firebase.functions("us-central1")
+        const result = await firebase.app().functions("us-central1")
             .httpsCallable("checkInAttendance")({
                 shift: shift.key,
                 location: checkInLocation
@@ -11510,7 +11514,7 @@ async function checkOut() {
             return;
         }
 
-        const result = await firebase.functions("us-central1")
+        const result = await firebase.app().functions("us-central1")
             .httpsCallable("checkOutAttendance")({
                 shift: shift.key,
                 location: checkOutLocation
