@@ -8467,6 +8467,7 @@ const ATTENDANCE_GPS_FIX_MAX_AGE_MS = 60 * 1000;
  */
 let currentPage = "dashboard";
 let adminPayrollPrintData = null;
+let attendanceActionInProgress = false;
 
 let attendanceListener = null;
 const FIRESTORE_AVATAR_PREFIX = "firestore-avatar:";
@@ -11396,6 +11397,10 @@ async function checkIn() {
         return;
     }
 
+    if (attendanceActionInProgress) return;
+    attendanceActionInProgress = true;
+    const checkInButton = $("checkInBtn");
+    if (checkInButton) checkInButton.disabled = true;
 
     const shift = getShiftInfo();
     const dateKey = getAttendanceDateKey(new Date(), shift.key);
@@ -11441,9 +11446,6 @@ async function checkIn() {
         );
 
 
-        await loadTodayAttendance();
-
-
     } catch (error) {
 
         console.error(
@@ -11455,6 +11457,9 @@ async function checkIn() {
             getFirebaseErrorMessage(error),
             "error"
         );
+    } finally {
+        attendanceActionInProgress = false;
+        await loadTodayAttendance();
     }
 }
 
@@ -11472,6 +11477,10 @@ async function checkOut() {
         return;
     }
 
+    if (attendanceActionInProgress) return;
+    attendanceActionInProgress = true;
+    const checkOutButton = $("checkOutBtn");
+    if (checkOutButton) checkOutButton.disabled = true;
 
     const shift = getShiftInfo();
     const dateKey = getAttendanceDateKey(new Date(), shift.key);
@@ -11528,9 +11537,6 @@ async function checkOut() {
         );
 
 
-        await loadTodayAttendance();
-
-
     } catch (error) {
 
         console.error(
@@ -11542,6 +11548,9 @@ async function checkOut() {
             getFirebaseErrorMessage(error),
             "error"
         );
+    } finally {
+        attendanceActionInProgress = false;
+        await loadTodayAttendance();
     }
 }
 
