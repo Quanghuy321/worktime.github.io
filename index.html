@@ -8309,7 +8309,6 @@ th {
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
@@ -11414,10 +11413,7 @@ async function checkIn() {
             );
 
 
-        if (
-            existing &&
-            existing.checkIn
-        ) {
+        if (existing?.checkIn) {
 
             showToast(
                 "Bạn đã chấm công vào.",
@@ -11427,17 +11423,28 @@ async function checkIn() {
             return;
         }
 
+        if (existing) {
+            showToast("Bản ghi ca đã tồn tại nhưng thiếu giờ vào. Vui lòng liên hệ quản trị viên.", "error");
+            return;
+        }
+
         const checkInLocation = await verifyAttendanceLocation();
         if (!checkInLocation) {
             return;
         }
 
-        const result = await firebase.app().functions("us-central1")
-            .httpsCallable("checkInAttendance")({
-                shift: shift.key,
-                location: checkInLocation
-            });
-        if (!result.data?.success) throw new Error("Không thể ghi nhận chấm công vào.");
+        await ref.set({
+            uid: currentUser.uid,
+            name: currentProfile?.name || "",
+            email: currentUser.email || "",
+            date: ref.key,
+            shift: shift.key,
+            shiftName: shift.name,
+            workUnits: 1,
+            checkIn: firebase.database.ServerValue.TIMESTAMP,
+            checkInLocation,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP
+        });
 
 
         showToast(
@@ -11523,17 +11530,21 @@ async function checkOut() {
             return;
         }
 
-        const result = await firebase.app().functions("us-central1")
-            .httpsCallable("checkOutAttendance")({
-                shift: shift.key,
-                location: checkOutLocation
-            });
-        if (!result.data?.success) throw new Error("Không thể ghi nhận chấm công ra.");
+        await ref.child("checkOut").set(firebase.database.ServerValue.TIMESTAMP);
+        let savedCheckOutLocation = true;
+        try {
+            await ref.child("checkOutLocation").set(checkOutLocation);
+        } catch (locationError) {
+            savedCheckOutLocation = false;
+            console.error("Could not save check-out location:", locationError);
+        }
 
 
         showToast(
-            "Chấm công ra thành công.",
-            "success"
+            savedCheckOutLocation
+                ? "Chấm công ra thành công."
+                : "Đã chấm công ra nhưng chưa lưu được vị trí; vui lòng báo quản trị viên.",
+            savedCheckOutLocation ? "success" : "error"
         );
 
 
@@ -12065,14 +12076,14 @@ async function loadHistory() {
 
                             <td>
                                 ${escapeHtml(
-                                    item.checkInText ||
+                                    getAttendanceTimeText(item, "checkIn") ||
                                     "--"
                                 )}
                             </td>
 
                             <td>
                                 ${escapeHtml(
-                                    item.checkOutText ||
+                                    getAttendanceTimeText(item, "checkOut") ||
                                     "--"
                                 )}
                             </td>
@@ -16081,8 +16092,8 @@ function payrollRenderDay(
                 data-date="${payrollEscapeHtml(dateKey)}"
                 data-attendance-key="${payrollEscapeHtml(attendance._recordKey || "")}" 
                 data-name="${payrollEscapeHtml(employeeName)}"
-                data-check-in="${payrollEscapeHtml(attendance.checkInText || "")}"
-                data-check-out="${payrollEscapeHtml(attendance.checkOutText || "")}"
+                data-check-in="${payrollEscapeHtml(getAttendanceTimeText(attendance, "checkIn"))}" 
+                data-check-out="${payrollEscapeHtml(getAttendanceTimeText(attendance, "checkOut"))}" 
                 data-shift="${shift}"
                 data-existing="${attendance.checkIn || attendance.checkOut ? "true" : "false"}"
                 data-work-units="${attendance.workUnits || 1}"

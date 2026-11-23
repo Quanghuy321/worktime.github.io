@@ -135,3 +135,97 @@
     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
 [error] 
 [error] Error: Failed to list functions for chamcong1-57c90
+[debug] [2026-11-23T03:50:27.972Z] ----------------------------------------------------------------------
+[debug] [2026-11-23T03:50:27.985Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ASUS\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions --project chamcong1-57c90
+[debug] [2026-11-23T03:50:27.986Z] CLI Version:   15.35.0
+[debug] [2026-11-23T03:50:27.986Z] Platform:      win32
+[debug] [2026-11-23T03:50:27.987Z] Node Version:  v24.19.0
+[debug] [2026-11-23T03:50:27.987Z] Detected Agent: codex_cli
+[debug] [2026-11-23T03:50:27.987Z] Time:          Mon Nov 23 2026 10:50:27 GMT+0700 (Giờ Đông Dương)
+[debug] [2026-11-23T03:50:27.989Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-11-23T03:50:32.800Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-11-23T03:50:32.801Z] > authorizing via signed-in user (quanghuymku233@gmail.com)
+[debug] [2026-11-23T03:50:32.801Z] [iam] checking project chamcong1-57c90 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-11-23T03:50:32.836Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:32.836Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:32.838Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions [none]
+[debug] [2026-11-23T03:50:32.838Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:50:32.838Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-11-23T03:50:34.308Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions 200
+[debug] [2026-11-23T03:50:34.308Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-11-23T03:50:34.310Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:34.311Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:34.312Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/chamcong1-57c90/serviceAccounts/chamcong1-57c90@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-11-23T03:50:34.313Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/chamcong1-57c90/serviceAccounts/chamcong1-57c90@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-11-23T03:50:35.906Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/chamcong1-57c90/serviceAccounts/chamcong1-57c90@appspot.gserviceaccount.com:testIamPermissions 404
+[debug] [2026-11-23T03:50:35.906Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/chamcong1-57c90/serviceAccounts/chamcong1-57c90@appspot.gserviceaccount.com:testIamPermissions {"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}}
+[debug] [2026-11-23T03:50:35.907Z] [functions] service account IAM check errored, deploy may fail: Request to https://iam.googleapis.com/v1/projects/chamcong1-57c90/serviceAccounts/chamcong1-57c90@appspot.gserviceaccount.com:testIamPermissions had HTTP Error: 404, Unknown service account {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}},"response":{"statusCode":404}},"exit":1,"message":"Request to https://iam.googleapis.com/v1/projects/chamcong1-57c90/serviceAccounts/chamcong1-57c90@appspot.gserviceaccount.com:testIamPermissions had HTTP Error: 404, Unknown service account","status":404}
+[info] 
+[info] === Deploying to 'chamcong1-57c90'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-11-23T03:50:35.915Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:35.915Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:35.916Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudresourcemanager.googleapis.com [none]
+[debug] [2026-11-23T03:50:35.916Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudresourcemanager.googleapis.com  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:50:37.697Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudresourcemanager.googleapis.com 200
+[debug] [2026-11-23T03:50:37.697Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudresourcemanager.googleapis.com [omitted]
+[debug] [2026-11-23T03:50:37.705Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:37.705Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:37.705Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90 [none]
+[debug] [2026-11-23T03:50:38.216Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90 200
+[debug] [2026-11-23T03:50:38.217Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90 {"projectNumber":"9357913722","projectId":"chamcong1-57c90","lifecycleState":"ACTIVE","name":"chamCong1","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-09-12T07:48:50.983Z","parent":{"type":"organization","id":"963096290152"}}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[debug] [2026-11-23T03:50:38.219Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:38.219Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:38.220Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:38.221Z] Checked if tokens are valid: true, expires at: 1795407259619
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[debug] [2026-11-23T03:50:38.222Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:38.222Z] Checked if tokens are valid: true, expires at: 1795407259619
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-11-23T03:50:38.223Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:38.223Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:38.223Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudfunctions.googleapis.com [none]
+[debug] [2026-11-23T03:50:38.224Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudfunctions.googleapis.com  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:50:38.225Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/runtimeconfig.googleapis.com [none]
+[debug] [2026-11-23T03:50:38.225Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/runtimeconfig.googleapis.com  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:50:38.227Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudbuild.googleapis.com [none]
+[debug] [2026-11-23T03:50:38.227Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudbuild.googleapis.com  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:50:38.229Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/artifactregistry.googleapis.com [none]
+[debug] [2026-11-23T03:50:38.229Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/artifactregistry.googleapis.com  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:50:39.711Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudfunctions.googleapis.com 200
+[debug] [2026-11-23T03:50:39.711Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudfunctions.googleapis.com [omitted]
+[warn] !  functions: missing required API cloudfunctions.googleapis.com. Enabling now... 
+[debug] [2026-11-23T03:50:39.712Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:39.713Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:39.713Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudfunctions.googleapis.com:enable [none]
+[debug] [2026-11-23T03:50:39.714Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudfunctions.googleapis.com:enable  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:50:39.768Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudbuild.googleapis.com 200
+[debug] [2026-11-23T03:50:39.768Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudbuild.googleapis.com [omitted]
+[warn] !  functions: missing required API cloudbuild.googleapis.com. Enabling now... 
+[debug] [2026-11-23T03:50:39.768Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:39.768Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:39.768Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudbuild.googleapis.com:enable [none]
+[debug] [2026-11-23T03:50:39.769Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudbuild.googleapis.com:enable  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:50:39.814Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/runtimeconfig.googleapis.com 200
+[debug] [2026-11-23T03:50:39.815Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2026-11-23T03:50:39.886Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/artifactregistry.googleapis.com 200
+[debug] [2026-11-23T03:50:39.887Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/artifactregistry.googleapis.com [omitted]
+[warn] !  artifactregistry: missing required API artifactregistry.googleapis.com. Enabling now... 
+[debug] [2026-11-23T03:50:39.887Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:39.887Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:50:39.887Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/artifactregistry.googleapis.com:enable [none]
+[debug] [2026-11-23T03:50:39.887Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/artifactregistry.googleapis.com:enable  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:50:40.329Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudfunctions.googleapis.com:enable 200
+[debug] [2026-11-23T03:50:40.329Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudfunctions.googleapis.com:enable [omitted]
+[debug] [2026-11-23T03:50:41.274Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudbuild.googleapis.com:enable 400
+[debug] [2026-11-23T03:50:41.274Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/cloudbuild.googleapis.com:enable [omitted]
+[debug] [2026-11-23T03:50:41.367Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/artifactregistry.googleapis.com:enable 400
+[debug] [2026-11-23T03:50:41.368Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/chamcong1-57c90/services/artifactregistry.googleapis.com:enable [omitted]
+[error] 
+[error] Error: Your project chamcong1-57c90 must be on the Blaze (pay-as-you-go) plan to complete this command. Required API cloudbuild.googleapis.com can't be enabled until the upgrade is complete. To upgrade, visit the following URL:
+
+https://console.firebase.google.com/project/chamcong1-57c90/usage/details
