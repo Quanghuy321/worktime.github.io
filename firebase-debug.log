@@ -69,3 +69,69 @@
 [debug] [2026-11-20T04:56:16.689Z] >>> [apiv2][query] GET https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json shallow=true
 [debug] [2026-11-20T04:56:17.249Z] <<< [apiv2][status] GET https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json 200
 [debug] [2026-11-20T04:56:17.249Z] <<< [apiv2][body] GET https://chamcong1-57c90-default-rtdb.firebaseio.com/attendance.json [stream]
+[debug] [2026-11-23T03:14:20.052Z] ----------------------------------------------------------------------
+[debug] [2026-11-23T03:14:20.064Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ASUS\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js functions:log --only checkInAttendance,checkOutAttendance --project chamcong1-57c90
+[debug] [2026-11-23T03:14:20.065Z] CLI Version:   15.35.0
+[debug] [2026-11-23T03:14:20.065Z] Platform:      win32
+[debug] [2026-11-23T03:14:20.065Z] Node Version:  v24.19.0
+[debug] [2026-11-23T03:14:20.065Z] Detected Agent: codex_cli
+[debug] [2026-11-23T03:14:20.066Z] Time:          Mon Nov 23 2026 10:14:20 GMT+0700 (Giờ Đông Dương)
+[debug] [2026-11-23T03:14:20.066Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-11-23T03:14:20.091Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-11-23T03:14:20.363Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-11-23T03:14:20.364Z] > authorizing via signed-in user (quanghuymku233@gmail.com)
+[debug] [2026-11-23T03:14:20.364Z] [iam] checking project chamcong1-57c90 for permissions ["firebase.projects.get","logging.logEntries.list","logging.logs.list"]
+[debug] [2026-11-23T03:14:20.365Z] Checked if tokens are valid: false, expires at: 1795152219894
+[debug] [2026-11-23T03:14:20.366Z] Checked if tokens are valid: false, expires at: 1795152219894
+[debug] [2026-11-23T03:14:20.366Z] > refreshing access token with scopes: []
+[debug] [2026-11-23T03:14:20.369Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-11-23T03:14:20.369Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-11-23T03:14:20.618Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-11-23T03:14:20.619Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-11-23T03:14:20.638Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions [none]
+[debug] [2026-11-23T03:14:20.639Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:14:20.639Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["firebase.projects.get","logging.logEntries.list","logging.logs.list"]}
+[debug] [2026-11-23T03:14:21.969Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions 200
+[debug] [2026-11-23T03:14:21.969Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["firebase.projects.get","logging.logEntries.list","logging.logs.list"]}
+[debug] [2026-11-23T03:14:21.970Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:14:21.970Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:14:21.971Z] >>> [apiv2][query] POST https://logging.googleapis.com/v2/entries:list [none]
+[debug] [2026-11-23T03:14:21.971Z] >>> [apiv2][body] POST https://logging.googleapis.com/v2/entries:list {"resourceNames":["projects/chamcong1-57c90"],"filter":"resource.type=\"cloud_function\" OR (resource.type=\"cloud_run_revision\" AND labels.\"goog-managed-by\"=\"cloudfunctions\")\n(resource.labels.function_name=\"checkInAttendance\" OR resource.labels.service_name=\"checkInAttendance\" OR resource.labels.function_name=\"checkOutAttendance\" OR resource.labels.service_name=\"checkOutAttendance\")","orderBy":"timestamp desc","pageSize":35}
+[debug] [2026-11-23T03:14:21.982Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-11-23T03:14:21.982Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2026-11-23T03:14:28.122Z] <<< [apiv2][status] POST https://logging.googleapis.com/v2/entries:list 200
+[debug] [2026-11-23T03:14:28.122Z] <<< [apiv2][body] POST https://logging.googleapis.com/v2/entries:list {"nextPageToken":"eqEBCpwBAUI4sNxDVr4zT0nWEEIDtNooihonOaW0ZuFm1DASTMMRvb4B5yLF2dIXxZOabAUr891JphvXWYhpV4sayCTvsH4YnmOnLXbKGYQQkQsifYahIj-7nFmNh_FBMTZX-qYWykOPJ_MOmbKsPmQVa_9YtvdFmq9CpvVd_HCv10o9iAYit5-X7vsG2mFKBxkqQGfymzBPv0O_t9fJhsA_EAA","firstProgressLatency":"0.269748330s"}
+[info] No log entries found.
+[debug] [2026-11-23T03:14:38.464Z] ----------------------------------------------------------------------
+[debug] [2026-11-23T03:14:38.468Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ASUS\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js functions:list --project chamcong1-57c90
+[debug] [2026-11-23T03:14:38.469Z] CLI Version:   15.35.0
+[debug] [2026-11-23T03:14:38.469Z] Platform:      win32
+[debug] [2026-11-23T03:14:38.469Z] Node Version:  v24.19.0
+[debug] [2026-11-23T03:14:38.469Z] Detected Agent: codex_cli
+[debug] [2026-11-23T03:14:38.469Z] Time:          Mon Nov 23 2026 10:14:38 GMT+0700 (Giờ Đông Dương)
+[debug] [2026-11-23T03:14:38.469Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-11-23T03:14:38.755Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-11-23T03:14:38.755Z] > authorizing via signed-in user (quanghuymku233@gmail.com)
+[debug] [2026-11-23T03:14:38.755Z] [iam] checking project chamcong1-57c90 for permissions ["cloudfunctions.functions.list","firebase.projects.get","run.services.list"]
+[debug] [2026-11-23T03:14:38.767Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:14:38.768Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:14:38.769Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions [none]
+[debug] [2026-11-23T03:14:38.769Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions  x-goog-user-project=chamcong1-57c90
+[debug] [2026-11-23T03:14:38.769Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["cloudfunctions.functions.list","firebase.projects.get","run.services.list"]}
+[debug] [2026-11-23T03:14:40.120Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions 200
+[debug] [2026-11-23T03:14:40.120Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chamcong1-57c90:testIamPermissions {"permissions":["cloudfunctions.functions.list","firebase.projects.get","run.services.list"]}
+[debug] [2026-11-23T03:14:40.121Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:14:40.122Z] Checked if tokens are valid: true, expires at: 1795407259619
+[debug] [2026-11-23T03:14:40.122Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/chamcong1-57c90/locations/-/functions [none]
+[debug] [2026-11-23T03:14:40.437Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/chamcong1-57c90/locations/-/functions 403
+[debug] [2026-11-23T03:14:40.438Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/chamcong1-57c90/locations/-/functions {"error":{"code":403,"message":"Cloud Functions API has not been used in project chamcong1-57c90 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=chamcong1-57c90 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=chamcong1-57c90","consumer":"projects/chamcong1-57c90","service":"cloudfunctions.googleapis.com","serviceTitle":"Cloud Functions API","containerInfo":"chamcong1-57c90"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project chamcong1-57c90 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=chamcong1-57c90 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=chamcong1-57c90"}]}]}}
+[debug] [2026-11-23T03:14:40.438Z] [functions] failed to list functions for chamcong1-57c90
+[debug] [2026-11-23T03:14:40.438Z] [functions] Request to https://cloudfunctions.googleapis.com/v1/projects/chamcong1-57c90/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project chamcong1-57c90 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=chamcong1-57c90 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+[debug] [2026-11-23T03:14:40.611Z] FirebaseError: Request to https://cloudfunctions.googleapis.com/v1/projects/chamcong1-57c90/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project chamcong1-57c90 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=chamcong1-57c90 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+    at responseToError (C:\Users\ASUS\AppData\Roaming\npm\node_modules\firebase-tools\lib\responseToError.js:53:12)
+    at RetryOperation._fn (C:\Users\ASUS\AppData\Roaming\npm\node_modules\firebase-tools\lib\apiv2.js:415:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[error] 
+[error] Error: Failed to list functions for chamcong1-57c90
