@@ -7786,6 +7786,14 @@ th {
                         Đang tải bản đồ...
                     </p>
                     <form id="attendanceGeofenceForm">
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label for="attendanceGeofenceAddress">Địa chỉ khu vực</label>
+                            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                                <input id="attendanceGeofenceAddress" type="text" maxlength="250" placeholder="Nhập địa chỉ để tìm trên bản đồ" style="flex:1;min-width:220px;">
+                                <button id="attendanceGeofenceSearchAddressBtn" type="button" class="btn btn-secondary">Tìm địa chỉ</button>
+                            </div>
+                            <small id="attendanceGeofenceAddressStatus" role="status" style="display:block;margin-top:6px;color:#64748b;">Tìm địa chỉ để đặt tâm vùng; hãy kiểm tra lại điểm trên bản đồ.</small>
+                        </div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="attendanceGeofenceName">Tên khu vực</label>
@@ -8301,6 +8309,7 @@ th {
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
@@ -8450,6 +8459,8 @@ let currentUser = null;
 let currentProfile = null;
 let editingEmployeeUid = null;
 const ATTENDANCE_GRACE_MINUTES = 10;
+const ATTENDANCE_MAX_GPS_ACCURACY_METERS = 30;
+const ATTENDANCE_GPS_FIX_MAX_AGE_MS = 60 * 1000;
 
 /*
  * LUÔN MỞ Ở DASHBOARD SAU KHI ĐĂNG NHẬP
@@ -8781,9 +8792,19 @@ function setupBasicEvents() {
         );
     }
 
+    $("attendanceGeofenceSearchAddressBtn")?.addEventListener(
+        "click",
+        searchAttendanceGeofenceAddress
+    );
+
     ["attendanceGeofenceLatitude", "attendanceGeofenceLongitude", "attendanceGeofenceRadius"]
         .forEach((id) => {
-            $(id)?.addEventListener("input", updateAttendanceGeofenceMapSelection);
+            $(id)?.addEventListener("input", function () {
+                if (id !== "attendanceGeofenceRadius") {
+                    $("attendanceGeofenceAddress").value = "";
+                }
+                updateAttendanceGeofenceMapSelection();
+            });
         });
 
     const attendanceShiftSelect = $("attendanceShiftSelect");
@@ -10503,13 +10524,36 @@ function getCurrentDevicePosition() {
             return;
         }
 
-        navigator.geolocation.getCurrentPosition(
+        let watchId = null;
+        let finished = false;
+        let bestPosition = null;
+        const finish = (error = null) => {
+            if (finished) return;
+            finished = true;
+            window.clearTimeout(timeoutId);
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+            if (error) {
+                reject(error);
+                return;
+            }
+            if (!bestPosition || bestPosition.coords.accuracy > ATTENDANCE_MAX_GPS_ACCURACY_METERS) {
+                reject(new Error(`Tín hiệu GPS chưa đủ chính xác (cần sai số không quá ±${ATTENDANCE_MAX_GPS_ACCURACY_METERS} m). Hãy ra nơi thoáng và thử lại.`));
+                return;
+            }
+            resolve({
+                latitude: bestPosition.coords.latitude,
+                longitude: bestPosition.coords.longitude,
+                accuracy: bestPosition.coords.accuracy,
+                timestamp: bestPosition.timestamp
+            });
+        };
+        const timeoutId = window.setTimeout(() => finish(), 20000);
+        watchId = navigator.geolocation.watchPosition(
             (position) => {
-                resolve({
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    accuracy: position.coords.accuracy
-                });
+                if (!bestPosition || position.coords.accuracy < bestPosition.coords.accuracy) {
+                    bestPosition = position;
+                }
+                if (position.coords.accuracy <= 15) finish();
             },
             (error) => {
                 const messages = {
@@ -10517,12 +10561,12 @@ function getCurrentDevicePosition() {
                     2: "Không xác định được vị trí. Hãy bật GPS và thử lại.",
                     3: "Lấy vị trí quá thời gian. Hãy thử lại ở nơi có tín hiệu GPS tốt hơn."
                 };
-                reject(new Error(messages[error.code] || "Không thể lấy vị trí GPS."));
+                if (error.code === 1) finish(new Error(messages[error.code]));
             },
             {
                 enableHighAccuracy: true,
                 maximumAge: 0,
-                timeout: 15000
+                timeout: 20000
             }
         );
     });
@@ -10774,6 +10818,7 @@ function initializeAttendanceGeofenceMap() {
     }).addTo(attendanceGeofenceMap);
     attendanceGeofenceSavedLayer = L.featureGroup().addTo(attendanceGeofenceMap);
     attendanceGeofenceMap.on("click", (event) => {
+        $("attendanceGeofenceAddress").value = "";
         $("attendanceGeofenceLatitude").value = event.latlng.lat.toFixed(7);
         $("attendanceGeofenceLongitude").value = event.latlng.lng.toFixed(7);
         updateAttendanceGeofenceMapSelection();
@@ -10786,6 +10831,84 @@ function initializeAttendanceGeofenceMap() {
 
     window.setTimeout(() => attendanceGeofenceMap?.invalidateSize(), 0);
     updateAttendanceGeofenceMapSelection();
+}
+
+async function searchAttendanceGeofenceAddress() {
+    const addressInput = $("attendanceGeofenceAddress");
+    const status = $("attendanceGeofenceAddressStatus");
+    const button = $("attendanceGeofenceSearchAddressBtn");
+    const query = addressInput?.value.trim();
+    if (!query) {
+        if (status) status.textContent = "Nhập địa chỉ trước khi tìm.";
+        return;
+    }
+
+    button.disabled = true;
+    if (status) status.textContent = "Đang tìm địa chỉ…";
+    try {
+        const lookup = attendanceAddressRequestQueue.then(async () => {
+            const waitMs = Math.max(0, 1100 - (Date.now() - lastAttendanceAddressRequestAt));
+            if (waitMs) await new Promise(resolve => window.setTimeout(resolve, waitMs));
+            lastAttendanceAddressRequestAt = Date.now();
+
+            const searchUrl = new URL("https://nominatim.openstreetmap.org/search");
+            searchUrl.search = new URLSearchParams({
+                q: query,
+                format: "jsonv2",
+                limit: "1",
+                addressdetails: "1"
+            });
+            const response = await fetch(searchUrl, {
+                headers: { "Accept": "application/json", "Accept-Language": "vi" }
+            });
+            if (!response.ok) throw new Error(`Nominatim HTTP ${response.status}`);
+            const results = await response.json();
+            const result = results[0];
+            if (!result || !Number.isFinite(Number(result.lat)) || !Number.isFinite(Number(result.lon))) {
+                throw new Error("Không tìm thấy địa chỉ.");
+            }
+            return {
+                latitude: Number(result.lat),
+                longitude: Number(result.lon),
+                displayName: result.display_name || query
+            };
+        });
+        attendanceAddressRequestQueue = lookup.catch(() => {});
+        let result;
+        try {
+            result = await lookup;
+        } catch (nominatimError) {
+            console.warn("Nominatim address search failed; trying Photon:", nominatimError);
+            const photonUrl = new URL("https://photon.komoot.io/api/");
+            photonUrl.search = new URLSearchParams({ q: query, limit: "1", lang: "vi" });
+            const response = await fetch(photonUrl, { headers: { "Accept": "application/json" } });
+            if (!response.ok) throw new Error(`Không tìm được địa chỉ (HTTP ${response.status}).`);
+            const feature = (await response.json()).features?.[0];
+            const [longitude, latitude] = feature?.geometry?.coordinates || [];
+            if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+                throw new Error("Không tìm thấy địa chỉ phù hợp.");
+            }
+            const properties = feature.properties || {};
+            result = {
+                latitude,
+                longitude,
+                displayName: [properties.name, properties.street, properties.city, properties.country]
+                    .filter(Boolean).join(", ") || query
+            };
+        }
+
+        $("attendanceGeofenceLatitude").value = result.latitude.toFixed(7);
+        $("attendanceGeofenceLongitude").value = result.longitude.toFixed(7);
+        addressInput.value = result.displayName;
+        updateAttendanceGeofenceMapSelection();
+        attendanceGeofenceMap?.setView([result.latitude, result.longitude], 18);
+        if (status) status.textContent = "Đã đặt tâm theo kết quả địa chỉ. Kiểm tra và chỉnh lại điểm trên bản đồ trước khi lưu.";
+    } catch (error) {
+        console.error("Could not find attendance geofence address:", error);
+        if (status) status.textContent = error.message || "Không tìm được địa chỉ. Thử nhập rõ hơn.";
+    } finally {
+        button.disabled = false;
+    }
 }
 
 function updateAttendanceGeofenceMapSelection() {
@@ -10925,6 +11048,9 @@ async function verifyAttendanceLocation() {
         }))
         .filter((geofence) =>
             Number.isFinite(position.accuracy) &&
+            position.accuracy <= ATTENDANCE_MAX_GPS_ACCURACY_METERS &&
+            Date.now() - position.timestamp >= 0 &&
+            Date.now() - position.timestamp <= ATTENDANCE_GPS_FIX_MAX_AGE_MS &&
             geofence.distanceMeters + position.accuracy <= geofence.radiusMeters
         )
         .sort((a, b) => a.distanceMeters - b.distanceMeters)[0];
@@ -10974,6 +11100,8 @@ async function verifyAttendanceLocation() {
         accuracyMeters: Number.isFinite(position.accuracy)
             ? Math.round(position.accuracy)
             : null,
+        accuracy: position.accuracy,
+        fixTimestamp: position.timestamp,
         checkedAt: Date.now()
     };
 }
@@ -11065,6 +11193,8 @@ async function setAttendanceGeofenceFromCurrentLocation() {
         const position = await getCurrentDevicePosition();
         $("attendanceGeofenceLatitude").value = position.latitude.toFixed(7);
         $("attendanceGeofenceLongitude").value = position.longitude.toFixed(7);
+        $("attendanceGeofenceAddress").value = "";
+        $("attendanceGeofenceAddressStatus").textContent = "Tâm vùng lấy từ GPS của thiết bị.";
         updateAttendanceGeofenceMapSelection();
         if (attendanceGeofenceMap) {
             attendanceGeofenceMap?.setView([position.latitude, position.longitude], 17);
@@ -11146,7 +11276,7 @@ async function renderAttendanceGeofenceList() {
         const description = document.createElement("p");
         description.style.cssText = "margin:4px 0 0;color:#64748b;font-size:13px;";
         description.textContent =
-            `Bán kính ${geofence.radiusMeters} m · ${geofence.latitude}, ${geofence.longitude}`;
+            `${geofence.address ? `${geofence.address} · ` : ""}Bán kính ${geofence.radiusMeters} m · ${geofence.latitude}, ${geofence.longitude}`;
         details.append(title, description);
 
         const removeButton = document.createElement("button");
@@ -11200,6 +11330,7 @@ async function saveAttendanceGeofence(event) {
     }
 
     const name = $("attendanceGeofenceName").value.trim();
+    const address = $("attendanceGeofenceAddress").value.trim();
     const latitude = Number($("attendanceGeofenceLatitude").value);
     const longitude = Number($("attendanceGeofenceLongitude").value);
     const radiusMeters = Number($("attendanceGeofenceRadius").value);
@@ -11225,6 +11356,7 @@ async function saveAttendanceGeofence(event) {
         await geofenceRef.set({
             enabled: true,
             name,
+            ...(address ? { address } : {}),
             latitude,
             longitude,
             radiusMeters,
@@ -11236,6 +11368,7 @@ async function saveAttendanceGeofence(event) {
         $("attendanceGeofenceForm").reset();
         $("attendanceGeofenceName").value = "Văn phòng";
         $("attendanceGeofenceRadius").value = "100";
+        $("attendanceGeofenceAddressStatus").textContent = "Tìm địa chỉ để đặt tâm vùng; hãy kiểm tra lại điểm trên bản đồ.";
         updateAttendanceGeofenceMapSelection();
         $("attendanceGeofenceLocateBtn").focus();
         showToast(`Đã thêm khu vực "${name}".`, "success");
@@ -11290,56 +11423,12 @@ async function checkIn() {
             return;
         }
 
-        const checkInAt = Date.now();
-        const punctuality = getAttendancePunctuality(
-            shift.key,
-            dateKey,
-            checkInAt,
-            null
-        );
-        const data = {
-
-            uid:
-                currentUser.uid,
-
-            name:
-                currentProfile?.name || "",
-
-            email:
-                currentUser.email || "",
-
-            date:
-                ref.key,
-
-            shift:
-                shift.key,
-
-            shiftName:
-                shift.name,
-
-            workUnits:
-                1,
-
-            checkIn:
-                checkInAt,
-
-            checkInText:
-                getCurrentTime(new Date(checkInAt)),
-
-            checkInLate:
-                punctuality.late,
-
-            checkInLateMinutes:
-                punctuality.lateMinutes,
-
-            checkInLocation,
-
-            updatedAt:
-                firebase.database.ServerValue.TIMESTAMP
-        };
-
-
-        await ref.update(data);
+        const result = await firebase.functions("us-central1")
+            .httpsCallable("checkInAttendance")({
+                shift: shift.key,
+                location: checkInLocation
+            });
+        if (!result.data?.success) throw new Error("Không thể ghi nhận chấm công vào.");
 
 
         showToast(
@@ -11421,32 +11510,12 @@ async function checkOut() {
             return;
         }
 
-        const checkOutAt = Date.now();
-        const punctuality = getAttendancePunctuality(
-            shift.key,
-            dateKey,
-            existing.checkIn,
-            checkOutAt
-        );
-        await ref.update({
-
-            checkOut:
-                checkOutAt,
-
-            checkOutText:
-                getCurrentTime(new Date(checkOutAt)),
-
-            checkOutEarly:
-                punctuality.early,
-
-            checkOutEarlyMinutes:
-                punctuality.earlyMinutes,
-
-            checkOutLocation,
-
-            updatedAt:
-                firebase.database.ServerValue.TIMESTAMP
-        });
+        const result = await firebase.functions("us-central1")
+            .httpsCallable("checkOutAttendance")({
+                shift: shift.key,
+                location: checkOutLocation
+            });
+        if (!result.data?.success) throw new Error("Không thể ghi nhận chấm công ra.");
 
 
         showToast(

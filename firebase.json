@@ -1,4 +1,27 @@
 {
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs20"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/functions/**",
+      "**/scripts/**",
+      "**/package*.json",
+      "**/firebase-config.js",
+      "**/firebase-realtime-database-init.json",
+      "**/app.js",
+      "**/*rules.json",
+      "**/*.rules",
+      "**/*debug.log",
+      "**/AVATAR-MIGRATION.md",
+      "**/salary-advances.example.json"
+    ]
+  },
   "database": {
     "rules": "database.rules.json"
   },
